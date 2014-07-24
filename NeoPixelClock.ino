@@ -39,7 +39,7 @@
 // define pins
 #define NEOPIN 6
 
-#define BRIGHTNESS 32 // set max brightness
+#define BRIGHTNESS 24 // set max brightness
 
 RTC_DS1307 RTC; // Establish clock object
 DateTime Clock; // Holds current clock time
@@ -68,14 +68,6 @@ void setup () {
   //strip.show(); // Initialize all pixels to 'off'
 
   strip.setBrightness(BRIGHTNESS); // set brightness
-
-  // startup sequence
-  //delay(500);
-  colorWipe(strip.Color(255, 0, 0), 20); // Red
-  colorWipe(strip.Color(0, 255, 0), 20); // Green
-  colorWipe(strip.Color(0, 0, 255), 20); // Blue
-  //delay(500);
-
 }
 
 void loop () {
@@ -95,49 +87,17 @@ void loop () {
 
   hourval = (hourval*60 + minuteval) / 12;  //each red dot represent 24 minutes.
 
-  // arc mode
-  for(uint8_t i=0; i<strip.numPixels(); i++) {
+  clearAll();
+  setHours();
 
-	if (i <= secondval) {
-  	  pixelColorRed = 139;
-	  pixelColorGreen = 139;
-	  pixelColorBlue = 0;
-	}
-	else {
-	  pixelColorRed = 0;
-	  pixelColorGreen = 0;
-	  pixelColorBlue = 0;
-	}
-
-	if (i == minuteval) {
-  	  pixelColorRed = 30;
-	  pixelColorGreen = 144;
-	  pixelColorBlue = 255;
-	}
-
-	if (i == hourval) {
-  	  pixelColorRed = 238;
-	  pixelColorGreen = 18;
-	  pixelColorBlue = 137;
-	}
-
-	if (i == hourval && i == minuteval) {
-  	  pixelColorRed = 0;
-	  pixelColorGreen = 255;
-	  pixelColorBlue = 0;
-	}
-	
-	if ((i == hourval && i == secondval) || (i == minuteval && i == secondval)) {
-	  pixelColorRed = 255;
-	  pixelColorGreen = 255;
-	  pixelColorBlue = 255;
-	}
-	
-
-	strip.setPixelColor(i, strip.Color(pixelColorRed, pixelColorGreen, pixelColorBlue));
+  strip.setPixelColor(hourval, strip.Color(199, 21, 133));
+  strip.setPixelColor(minuteval, strip.Color(0, 255, 0));
+  strip.setPixelColor(secondval, strip.Color(30, 144, 255));
+  
+  if (hourval == minuteval) {
+    strip.setPixelColor(hourval, strip.Color(255, 255, 0));
   }
-
-
+  
   // for serial debugging
    Serial.print(hourval, DEC);
    Serial.print(':');
@@ -147,18 +107,16 @@ void loop () {
 
   //display
   strip.show();
- 
-  // wait
-  //delay(100);
-
 }
 
-
-// Fill the dots one after the other with a color
-void colorWipe(uint32_t c, uint8_t wait) {
+void clearAll() {
   for(uint16_t i=0; i<strip.numPixels(); i++) {
-	strip.setPixelColor(i, c);
-	strip.show();
-	//delay(wait);
+    strip.setPixelColor(i, strip.Color(0, 0, 0));
+  }
+}
+
+void setHours() {
+  for(uint16_t i=0; i<strip.numPixels(); i+=5) {
+    strip.setPixelColor(i, strip.Color(255, 255, 139));
   }
 }
